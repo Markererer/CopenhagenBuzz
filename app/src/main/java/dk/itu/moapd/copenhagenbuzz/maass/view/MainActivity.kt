@@ -15,14 +15,10 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.snackbar.Snackbar
 import dk.itu.moapd.copenhagenbuzz.maass.databinding.ActivityMainBinding
 import dk.itu.moapd.copenhagenbuzz.maass.R
 import dk.itu.moapd.copenhagenbuzz.maass.model.Event
 import dk.itu.moapd.copenhagenbuzz.maass.viewmodel.EventViewModel
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
 
 /**
  * Main activity for the CopenhagenBuzz app, handling navigation between fragments and event management.
@@ -55,10 +51,14 @@ class MainActivity : AppCompatActivity() {
         isLoggedIn = intent.getBooleanExtra("isLoggedIn", false)
         invalidateOptionsMenu() // Update menu based on login state
 
-        // Add insets handling to avoid overlapping with the status bar
+        // Add insets handling to avoid overlapping with system bars
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.updatePadding(top = insets.top)
+            // Apply padding to the root layout to avoid overlap with status bar
+            view.updatePadding(top = insets.top, bottom = insets.bottom)
+            // Apply padding to BottomNavigationView to avoid overlap with navigation bar
+            binding.bottomNavigation.updatePadding(bottom = insets.bottom)
+            // Adjust FAB margin if needed (handled by layout constraints)
             windowInsets
         }
 
