@@ -52,13 +52,12 @@ class MainActivity : AppCompatActivity() {
         invalidateOptionsMenu() // Update menu based on login state
 
         // Add insets handling to avoid overlapping with system bars
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, windowInsets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.contentFrame) { view, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-            // Apply padding to the root layout to avoid overlap with status bar
-            view.updatePadding(top = insets.top, bottom = insets.bottom)
+            // Apply padding to the content frame to avoid overlap with status bar
+            view.updatePadding(top = insets.top)
             // Apply padding to BottomNavigationView to avoid overlap with navigation bar
             binding.bottomNavigation.updatePadding(bottom = insets.bottom)
-            // Adjust FAB margin if needed (handled by layout constraints)
             windowInsets
         }
 
