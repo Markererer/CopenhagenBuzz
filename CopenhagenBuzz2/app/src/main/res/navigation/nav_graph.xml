@@ -1,0 +1,36 @@
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/timelineFragment">
+
+    <!-- Existing fragments -->
+    <fragment
+        android:id="@+id/timelineFragment"
+        android:name="dk.itu.moapd.copenhagenbuzz.maass.view.TimelineFragment"
+        android:label="Timeline" />
+
+    <fragment
+        android:id="@+id/favoritesFragment"
+        android:name="dk.itu.moapd.copenhagenbuzz.maass.view.FavoritesFragment"
+        android:label="Favorites" />
+
+    <fragment
+        android:id="@+id/mapsFragment"
+        android:name="dk.itu.moapd.copenhagenbuzz.maass.view.MapsFragment"
+        android:label="Maps" />
+
+    <!-- AddEventFragment -->
+    <fragment
+        android:id="@+id/addEventFragment"
+        android:name="dk.itu.moapd.copenhagenbuzz.maass.view.AddEventFragment"
+        android:label="Add Event"
+        tools:layout="@layout/fragment_add_event">
+        <action
+            android:id="@+id/action_addEventFragment_to_timelineFragment"
+            app:destination="@id/timelineFragment"
+            app:popUpTo="@id/timelineFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+</navigation>

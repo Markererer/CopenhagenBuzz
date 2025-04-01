@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/timelineFragment"
+        android:icon="@drawable/baseline_access_time_24"
+        android:title="Timeline" />
+    <item
+        android:id="@+id/favoritesFragment"
+        android:icon="@drawable/baseline_add_reaction_24"
+        android:title="Favorites" />
+    <item
+        android:id="@+id/mapsFragment"
+        android:icon="@drawable/baseline_directions_run_24"
+        android:title="Maps" />
+</menu>
