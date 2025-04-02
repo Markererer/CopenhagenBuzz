@@ -21,4 +21,3 @@ dependencyResolutionManagement {
 
 rootProject.name = "CopenhagenBuzz"
 include(":app")
-include(":CopenhagenBuzz2")

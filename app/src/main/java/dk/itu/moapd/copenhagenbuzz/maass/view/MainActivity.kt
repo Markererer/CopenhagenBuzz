@@ -21,12 +21,19 @@ import dk.itu.moapd.copenhagenbuzz.maass.model.Event
 import dk.itu.moapd.copenhagenbuzz.maass.viewmodel.EventViewModel
 
 /**
- * Main activity for the CopenhagenBuzz app, handling navigation between fragments and event management.
+ * Main activity for the CopenhagenBuzz app, serving as the central hub for navigation and event management.
  *
- * This activity sets up the Bottom Navigation Bar and Floating Action Button (FAB), coordinating
- * navigation via Jetpack Navigation. It uses ViewBinding for UI interaction, manages login/guest
- * states with an icon toggle, and delegates event data to [EventViewModel]. Users can switch
- * to [LoginActivity] for authentication or guest mode.
+ * This activity initializes the user interface with a Bottom Navigation Bar and a Floating Action Button (FAB),
+ * utilizing Jetpack Navigation to manage transitions between fragments (e.g., Timeline, Favorites, Maps, Add Event).
+ * It employs ViewBinding for secure UI component access and integrates with [EventViewModel] to manage event data.
+ * The activity supports login/guest states, toggling the top-left action bar icon between an account (logged-in)
+ * and logout (guest) representation, and uses explicit Intents to switch to [LoginActivity] for authentication
+ * or mode changes. System window insets are handled to ensure compatibility with edge-to-edge displays.
+ *
+ * @property binding The ViewBinding instance for [ActivityMainBinding] to interact with the layout.
+ * @property navController The [NavController] managing fragment navigation.
+ * @property viewModel The [EventViewModel] instance handling event data via LiveData.
+ * @property isLoggedIn A boolean flag indicating the user's login status, initialized from an Intent extra.
  */
 class MainActivity : AppCompatActivity() {
 
@@ -36,9 +43,19 @@ class MainActivity : AppCompatActivity() {
     private var isLoggedIn: Boolean = false
 
     companion object {
+        /** Tag for logging purposes, set to the fully qualified class name. */
         private val TAG = MainActivity::class.qualifiedName
     }
 
+    /**
+     * Called when the activity is first created.
+     *
+     * Initializes the activity by setting up ViewBinding, handling system window insets, retrieving the
+     * login state from an Intent, configuring the navigation controller with the Bottom Navigation Bar,
+     * and setting up the FAB behavior based on the current navigation destination.
+     *
+     * @param savedInstanceState The saved instance state bundle, or null if none.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -90,11 +107,30 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Inflates the menu resource file for the action bar.
+     *
+     * This method loads the [R.menu.menu_main] resource to display the account/logout icon in the
+     * action bar. The menu is updated dynamically in [onPrepareOptionsMenu].
+     *
+     * @param menu The [Menu] object to inflate the menu into.
+     * @return `true` to indicate the menu has been inflated successfully.
+     */
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }
 
+    /**
+     * Prepares the options menu before it is displayed.
+     *
+     * Updates the action bar icon and click behavior based on the [isLoggedIn] state. For logged-in
+     * users, it shows an account icon and triggers logout; for guests, it shows a logout icon and
+     * returns to [LoginActivity].
+     *
+     * @param menu The [Menu] object to prepare.
+     * @return `true` to indicate the menu has been prepared, delegating to the superclass.
+     */
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         val menuItem = menu.findItem(R.id.action_account)
         if (isLoggedIn) {
@@ -115,6 +151,15 @@ class MainActivity : AppCompatActivity() {
         return super.onPrepareOptionsMenu(menu)
     }
 
+    /**
+     * Handles action bar item selections.
+     *
+     * Currently delegates all selections to the superclass, with specific handling defined in
+     * [onPrepareOptionsMenu] for the account/logout action.
+     *
+     * @param item The selected [MenuItem].
+     * @return `true` if the item selection is handled, `false` otherwise.
+     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             else -> super.onOptionsItemSelected(item)
