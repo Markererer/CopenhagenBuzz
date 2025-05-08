@@ -59,10 +59,13 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Set up view binding
+        // Existing view binding setup
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        // TA's suggestion: Set up the top app bar
+        setSupportActionBar(binding.topAppBar)
 
         // Get login state from Intent
         isLoggedIn = intent.getBooleanExtra("isLoggedIn", false)
@@ -79,7 +82,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Navigation setup
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         bottomNavigationView.setupWithNavController(navController)
@@ -95,6 +99,7 @@ class MainActivity : AppCompatActivity() {
                         addEventFragment?.saveEvent()
                     }
                 }
+
                 else -> {
                     binding.fabAddEvent.setImageResource(R.drawable.baseline_add_24)
                     binding.fabAddEvent.setOnClickListener {
@@ -116,6 +121,7 @@ class MainActivity : AppCompatActivity() {
      * @param menu The [Menu] object to inflate the menu into.
      * @return `true` to indicate the menu has been inflated successfully.
      */
+    // Merged menu handling
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
@@ -132,36 +138,26 @@ class MainActivity : AppCompatActivity() {
      * @return `true` to indicate the menu has been prepared, delegating to the superclass.
      */
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        val menuItem = menu.findItem(R.id.action_account)
-        if (isLoggedIn) {
-            menuItem.setIcon(R.drawable.baseline_account_circle_24)
-            menuItem.setOnMenuItemClickListener {
-                startActivity(Intent(this, LoginActivity::class.java))
-                finish()
-                true
-            }
-        } else {
-            menuItem.setIcon(R.drawable.baseline_close_24)
-            menuItem.setOnMenuItemClickListener {
-                startActivity(Intent(this, LoginActivity::class.java))
-                finish()
-                true
-            }
-        }
-        return super.onPrepareOptionsMenu(menu)
+        // TA's suggestion: Toggle visibility of login/logout items
+        menu.findItem(R.id.login).isVisible = !isLoggedIn
+        menu.findItem(R.id.logout).isVisible = isLoggedIn
+
+
+        return true
     }
 
-    /**
-     * Handles action bar item selections.
-     *
-     * Currently delegates all selections to the superclass, with specific handling defined in
-     * [onPrepareOptionsMenu] for the account/logout action.
-     *
-     * @param item The selected [MenuItem].
-     * @return `true` if the item selection is handled, `false` otherwise.
-     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            R.id.login, R.id.logout -> {
+                // TA's suggested login/logout handling
+                val intent = Intent(this@MainActivity, LoginActivity::class.java)
+                startActivity(intent)
+                finish()
+                true
+            }
+
+
+
             else -> super.onOptionsItemSelected(item)
         }
     }
