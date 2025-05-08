@@ -6,8 +6,17 @@
         <item>Workshop</item>
         <item>Chinese New Year</item>
     </string-array>
-    <!-- TODO: Remove or change this placeholder text -->
+
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="add_event">Add hello event</string>
-
+    <string name="hint_event_name">Event name</string>
+    <string name="hint_event_location">Event location</string>
+    <string name="hint_pick_date">Pick date</string>
+    <string name="hint_event_type">Event Type</string>
+    <string name="content_description_event_type">event type</string>
+    <string name="hint_event_description">Event description</string>
+    <string name="hint_event_date">Event date</string>"
+    <string name="login">Login</string>
+    <string name="logout">Logout</string>
+    <string name="guest">Guest</string>
 </resources>

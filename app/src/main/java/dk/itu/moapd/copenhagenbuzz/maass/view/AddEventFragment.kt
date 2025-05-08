@@ -60,7 +60,7 @@ class AddEventFragment : Fragment() {
         val name = binding.editTextEventName.text.toString().trim()
         val location = binding.editTextEventLocation.text.toString().trim()
         val date = binding.editTextPickDate.text.toString().trim()
-        val type = binding.filledExposed.text.toString().trim()
+        val type = binding.eventType.text.toString().trim()
         val description = binding.editTextEventDescription.text.toString().trim()
 
         if (name.isNotEmpty() && location.isNotEmpty()) {
@@ -79,7 +79,7 @@ class AddEventFragment : Fragment() {
         binding.editTextEventName.text?.clear()
         binding.editTextEventLocation.text?.clear()
         binding.editTextPickDate.text?.clear()
-        binding.filledExposed.text?.clear()
+        binding.eventType.text?.clear()
         binding.editTextEventDescription.text?.clear()
     }
 
@@ -103,16 +103,16 @@ class AddEventFragment : Fragment() {
             R.layout.simple_dropdown_item_1line,
             eventTypes
         )
-        binding.filledExposed.setAdapter(adapter)
+        binding.eventType.setAdapter(adapter)
 
         // Show dropdown when clicked
-        binding.filledExposed.setOnClickListener {
-            binding.filledExposed.showDropDown()
+        binding.eventType.setOnClickListener {
+            binding.eventType.showDropDown()
         }
 
         // Handle item selection
-        binding.filledExposed.setOnItemClickListener { _, _, position, _ ->
-            binding.filledExposed.setText(eventTypes[position])
+        binding.eventType.setOnItemClickListener { _, _, position, _ ->
+            binding.eventType.setText(eventTypes[position])
         }
     }
 

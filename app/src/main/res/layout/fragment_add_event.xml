@@ -1,34 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <TextView
-        android:id="@+id/text_view_app_name"
-        style="?textAppearanceHeadlineSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="CopenhagenBuzz"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    android:layout_height="match_parent"
+    android:padding="@dimen/default_padding">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/text_field_event_name"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="16dp"
-        android:hint="Event name"
+        android:layout_marginTop="@dimen/field_gap"
+        android:hint="@string/hint_event_name"
         app:endIconMode="clear_text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_view_app_name"
         app:startIconDrawable="@drawable/baseline_festival_24">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -38,19 +24,13 @@
             android:inputType="text" />
 
     </com.google.android.material.textfield.TextInputLayout>
-
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/text_field_event_location"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:hint="Event location"
+        android:layout_marginTop="@dimen/field_gap"
+        android:hint="@string/hint_event_location"
         app:endIconMode="clear_text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_field_event_name"
         app:startIconDrawable="@drawable/baseline_add_location_alt_24">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -64,65 +44,46 @@
     <com.google.android.material.textfield.TextInputLayout
 
         android:id="@+id/text_pickDate"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginTop="@dimen/field_gap"
         app:endIconMode="clear_text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_field_event_location"
         app:startIconDrawable="@drawable/baseline_access_time_24">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edit_text_pickDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Pick date"
-            tools:ignore="MissingConstraints"
-
-
-            tools:layout_editor_absoluteX="25dp"
-            tools:layout_editor_absoluteY="215dp" />
+            android:hint="@string/hint_pick_date"/>
 
     </com.google.android.material.textfield.TextInputLayout>
-
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/dropdown_layout"
-        android:layout_width="0dp"
+        android:id="@+id/event_type_container"
+        style="@style/Widget.Material3.TextInputLayout.FilledBox.ExposedDropdownMenu"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:hint="Event Type"
-        app:startIconDrawable="@drawable/baseline_category_24"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_pickDate"
-        tools:ignore="ExtraText">
+        android:layout_marginTop="@dimen/field_gap"
+        android:hint="@string/app_name">
 
         <AutoCompleteTextView
-            android:id="@+id/filled_exposed"
+            android:id="@+id/event_type"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="none"/> <!-- Ensure inputType is "none" -->
-
+            android:contentDescription="event type"
+            android:hint="@string/hint_event_type"
+            android:inputType="none"
+            app:simpleItems="@array/dropdown_options"
+            tools:ignore="LabelFor" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/text_event_description"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:hint="Event description"
+        android:layout_marginTop="@dimen/field_gap"
+        android:hint="@string/hint_event_description"
         app:endIconMode="clear_text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/dropdown_layout"
         app:startIconDrawable="@drawable/baseline_add_location_alt_24">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -135,4 +96,4 @@
     </com.google.android.material.textfield.TextInputLayout>
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>
