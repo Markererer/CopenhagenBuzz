@@ -9,7 +9,7 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="margin100">100dp</dimen>
     <dimen name="null_dp">0dp</dimen>
-
+    <dimen name="margin_dumb_fix">65dp</dimen>
 
 
     <!-- Component Sizing -->
