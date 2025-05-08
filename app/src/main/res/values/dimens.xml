@@ -1,3 +1,18 @@
 <resources>
+
+    <!-- Padding and Margins -->
+    <dimen name="default_padding">16dp</dimen>
+    <dimen name="default_padding_x0.5">8dp</dimen>
+    <dimen name="default_padding_x0.25">4dp</dimen>
+    <dimen name="field_gap">24dp</dimen>
+    <dimen name="large_margin">32dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="margin100">100dp</dimen>
+    <dimen name="null_dp">0dp</dimen>
+    <dimen name="margin_dumb_fix">65dp</dimen>
+
+
+    <!-- Component Sizing -->
+    <dimen name="input_field_height">56dp</dimen>
+
 </resources>
