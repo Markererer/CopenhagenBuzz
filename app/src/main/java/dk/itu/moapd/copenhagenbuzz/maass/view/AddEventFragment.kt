@@ -64,7 +64,7 @@ class AddEventFragment : Fragment() {
         val description = binding.editTextEventDescription.text.toString().trim()
 
         if (name.isNotEmpty() && location.isNotEmpty()) {
-            viewModel.addEvent(Event(name, location, date, type, description))
+            viewModel.addEvent(Event(name, location, date, type, description, imageResId = 0))
             clearForm()
             findNavController().popBackStack() // Navigate back
         } else {

@@ -45,14 +45,16 @@ class TimelineFragment : Fragment() {
                 "Copenhagen",
                 "10/07/2024",
                 "Concert",
-                "Annual jazz festival."
+                "Annual jazz festival.",
+                6
             ),
             Event(
                 "Tech Conference",
                 "IT University",
                 "15/08/2024",
                 "Conference",
-                "Tech talks and workshops."
+                "Tech talks and workshops.",
+                2
             )
         )
 

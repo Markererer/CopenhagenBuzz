@@ -45,4 +45,5 @@ class EventAdapter(context: Context, private val events: List<Event>) :
 
         return view
     }
+
 }
