@@ -64,4 +64,11 @@ dependencies {
     implementation("androidx.credentials:credentials:1.3.0") // Consider adding to libs.versions.toml
     implementation("androidx.credentials:credentials-play-services-auth:1.3.0") // Consider adding to libs.versions.toml
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1") // Consider adding to libs.versions.toml
+
+    // Firebase reatlime database
+
+    implementation("com.google.firebase:firebase-database-ktx")
+    implementation("com.google.firebase:firebase-auth-ktx")
+
+
 }

@@ -40,6 +40,9 @@ class MainActivity : AppCompatActivity() {
         isLoggedIn = intent.getBooleanExtra("isLoggedIn", false)
         invalidateOptionsMenu()
 
+        // Initialize sample events
+        viewModel.initializeSampleEvents()
+
         // Set initial FAB visibility
         binding.fabAddEvent.visibility = if (isLoggedIn) View.VISIBLE else View.GONE
 
@@ -108,7 +111,7 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.logout -> {
                 FirebaseAuth.getInstance().signOut()
-                Toast.makeText(this, "You are now logged out.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "You are now logged out.", Toast.LENGTH_SHORT).show()
                 startActivity(Intent(this, MainActivity::class.java).apply {
                     putExtra("isLoggedIn", false)
                 })

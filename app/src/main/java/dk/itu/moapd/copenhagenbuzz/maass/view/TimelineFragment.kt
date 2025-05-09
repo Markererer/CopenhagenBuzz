@@ -10,27 +10,7 @@ import dk.itu.moapd.copenhagenbuzz.maass.R
 import android.widget.ListView
 import dk.itu.moapd.copenhagenbuzz.maass.view.EventAdapter
 
-
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [TimelineFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class TimelineFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,23 +18,29 @@ class TimelineFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_timeline, container, false)
 
-        // Mock data for testing
+        // Mock data for testing with new Event signature
         val events = listOf(
             Event(
-                "Copenhagen Jazz Festival",
-                "Copenhagen",
-                "10/07/2024",
-                "Concert",
-                "Annual jazz festival.",
-                6
+                id = "1",
+                eventName = "Copenhagen Jazz Festival",
+                eventLocation = "Copenhagen",
+                eventDate = 1710000000000L, // example timestamp
+                eventType = "Concert",
+                eventDescription = "Annual jazz festival.",
+                imageResId = 0,
+                photoUrl = "",
+                eventAuthor = ""
             ),
             Event(
-                "Tech Conference",
-                "IT University",
-                "15/08/2024",
-                "Conference",
-                "Tech talks and workshops.",
-                2
+                id = "2",
+                eventName = "Tech Conference",
+                eventLocation = "IT University",
+                eventDate = 1715000000000L,
+                eventType = "Conference",
+                eventDescription = "Tech talks and workshops.",
+                imageResId = 0,
+                photoUrl = "",
+                eventAuthor = ""
             )
         )
 
@@ -62,25 +48,5 @@ class TimelineFragment : Fragment() {
         eventListView.adapter = EventAdapter(requireContext(), events)
 
         return view
-    }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment TimelineFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            TimelineFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
     }
 }
