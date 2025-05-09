@@ -28,6 +28,9 @@
     <string name="error_password_empty">Please enter your password</string>
     <string name="auth_failed">Authentication failed</string>
 
+    <string name="account_created">Account created successfully</string>
+
+
 
 
 </resources>

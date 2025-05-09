@@ -12,8 +12,8 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
-
-
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.ktx.Firebase
 import dk.itu.moapd.copenhagenbuzz.maass.R
 import dk.itu.moapd.copenhagenbuzz.maass.databinding.ActivityLoginBinding
@@ -47,11 +47,11 @@ class LoginActivity : AppCompatActivity() {
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
         // Set up click listeners
-        binding.etEmail.setOnClickListener {
+        binding.btnLogin.setOnClickListener {
             val email = binding.etEmail.text.toString()
             val password = binding.etPassword.text.toString()
             if (validateInput(email, password)) {
-                loginWithEmail(email, password)
+                loginOrRegisterWithEmail(email, password)
             }
         }
 
@@ -76,18 +76,92 @@ class LoginActivity : AppCompatActivity() {
         return true
     }
 
+    private fun loginOrRegisterWithEmail(email: String, password: String) {
+        // Check if the user exists first
+        auth.fetchSignInMethodsForEmail(email)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val signInMethods = task.result?.signInMethods ?: emptyList<String>()
+                    Log.d(TAG, "Sign-in methods for $email: $signInMethods")
+
+                    if (signInMethods.isEmpty()) {
+                        // User doesn't exist, register
+                        Log.d(TAG, "Email not registered, proceeding to registration")
+                        registerUser(email, password)
+                    } else {
+                        // User exists, attempt login
+                        Log.d(TAG, "Email already registered, proceeding to login")
+                        loginWithEmail(email, password)
+                    }
+                } else {
+                    // Error checking email
+                    Log.e(TAG, "Error checking email", task.exception)
+                    Toast.makeText(
+                        this,
+                        "Error checking email: ${task.exception?.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+    }
+
     private fun loginWithEmail(email: String, password: String) {
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
+                    // Login succeeded
                     Log.d(TAG, "signInWithEmail:success")
                     startMainActivity(true)
                 } else {
+                    // Login failed
                     Log.w(TAG, "signInWithEmail:failure", task.exception)
+                    val e = task.exception
+                    when (e) {
+                        is FirebaseAuthInvalidCredentialsException -> {
+                            // Wrong password
+                            Toast.makeText(
+                                this,
+                                "Incorrect password for $email",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        else -> {
+                            // Other errors (network, etc.)
+                            Toast.makeText(
+                                this,
+                                e?.message ?: "Login failed",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }
+                }
+            }
+    }
+
+    private fun registerUser(email: String, password: String) {
+        auth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    Log.d(TAG, "createUserWithEmail:success")
                     Toast.makeText(
-                        baseContext, getString(R.string.auth_failed),
+                        this,
+                        getString(R.string.account_created),
                         Toast.LENGTH_SHORT
                     ).show()
+                    startMainActivity(true)
+                } else {
+                    // Registration failed
+                    Log.w(TAG, "createUserWithEmail:failure", task.exception)
+                    val e = task.exception
+                    // Check if the error is due to the email already being in use
+                    if (e?.message?.contains("email address is already in use") == true) {
+                        // This should not happen due to our previous check, but just in case
+                        Log.w(TAG, "Email already in use, attempting login instead")
+                        loginWithEmail(email, password)
+                    } else {
+                        val message = e?.message ?: "Registration failed"
+                        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+                    }
                 }
             }
     }
