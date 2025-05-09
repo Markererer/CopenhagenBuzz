@@ -20,9 +20,6 @@ import java.util.Calendar
 import java.util.Locale
 import com.google.firebase.auth.FirebaseAuth
 
-/**
- * Fragment for adding new events to the CopenhagenBuzz app.
- */
 class AddEventFragment : Fragment() {
 
     private lateinit var binding: FragmentAddEventBinding
@@ -39,9 +36,6 @@ class AddEventFragment : Fragment() {
         return binding.root
     }
 
-    /**
-     * Called by MainActivity FAB to save the event.
-     */
     fun saveEvent() {
         val name = binding.editTextEventName.text.toString().trim()
         val location = binding.editTextEventLocation.text.toString().trim()
@@ -99,6 +93,10 @@ class AddEventFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Make editTextPickDate non-focusable to avoid focus click
+        binding.editTextPickDate.isFocusable = false
+        binding.editTextPickDate.isFocusableInTouchMode = false
 
         // Date picker
         binding.editTextPickDate.setOnClickListener {
