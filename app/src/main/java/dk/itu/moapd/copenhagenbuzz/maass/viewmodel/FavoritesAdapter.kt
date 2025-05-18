@@ -1,18 +1,15 @@
 package dk.itu.moapd.copenhagenbuzz.maass.viewmodel
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import dk.itu.moapd.copenhagenbuzz.maass.R
 import dk.itu.moapd.copenhagenbuzz.maass.model.Event
 
-class FavoritesAdapter(private val events: List<Event>, private var eventList: List<Event>) :
-
+class FavoritesAdapter(private var events: List<Event>) :
     RecyclerView.Adapter<FavoritesAdapter.FavoriteViewHolder>() {
 
     class FavoriteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -32,15 +29,14 @@ class FavoritesAdapter(private val events: List<Event>, private var eventList: L
         val event = events[position]
         holder.eventName.text = event.eventName
         holder.eventType.text = event.eventType
-        holder.avatarLetter.text = event.eventAuthor.first().uppercaseChar().toString()
-        holder.eventImage.setImageResource(R.drawable.baseline_save_24)  // Use Glide for URLs
+        holder.avatarLetter.text = event.userId?.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
+        holder.eventImage.setImageResource(R.drawable.baseline_save_24)
     }
 
     override fun getItemCount() = events.size
 
     fun updateData(newEvents: List<Event>) {
-        eventList = newEvents
+        events = newEvents
         notifyDataSetChanged()
     }
-
 }

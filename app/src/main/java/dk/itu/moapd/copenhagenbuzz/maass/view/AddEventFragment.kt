@@ -73,7 +73,7 @@ class AddEventFragment : Fragment() {
             eventDescription = description,
             imageResId = 0,
             photoUrl = photoUrl,
-            eventAuthor = userId
+            userId = userId
         )
 
         // Add to Firebase via ViewModel

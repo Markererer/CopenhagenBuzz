@@ -1,39 +1,41 @@
 package dk.itu.moapd.copenhagenbuzz.maass.view
 
-import android.content.Context
-import android.view.LayoutInflater
+import android.app.Activity
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
+import android.widget.ImageView
 import android.widget.TextView
+import com.firebase.ui.database.FirebaseListAdapter
+import com.firebase.ui.database.FirebaseListOptions
 import dk.itu.moapd.copenhagenbuzz.maass.R
 import dk.itu.moapd.copenhagenbuzz.maass.model.Event
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.util.*
 
-/**
- * Adapter for displaying a list of events in a ListView.
- */
 class EventAdapter(
-    context: Context,
-    private val events: List<Event>
-) : ArrayAdapter<Event>(context, R.layout.event_row_item, events) {
+    options: FirebaseListOptions<Event>,
+    private val favoriteIds: Set<String>,
+    private val onFavoriteClick: (Event, Boolean) -> Unit
+) : FirebaseListAdapter<Event>(options) {
 
     private val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
 
+    override fun populateView(v: View, model: Event, position: Int) {
+        v.findViewById<TextView>(R.id.event_name).text = model.eventName
+        v.findViewById<TextView>(R.id.event_location).text = model.eventLocation
+        v.findViewById<TextView>(R.id.event_date).text = dateFormatter.format(Date(model.eventDate))
+        val favoriteIcon = v.findViewById<ImageView>(R.id.favoriteIcon)
+        val isFavorite = favoriteIds.contains(model.id)
+        favoriteIcon.setImageResource(
+            if (isFavorite) R.drawable.ic_star_filled else R.drawable.ic_star_border
+        )
+        favoriteIcon.setOnClickListener {
+            onFavoriteClick(model, isFavorite)
+        }
+    }
+
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val event = getItem(position)!!
-        val view = convertView ?: LayoutInflater.from(context)
-            .inflate(R.layout.event_row_item, parent, false)
-
-        view.findViewById<TextView>(R.id.event_name).text = event.eventName
-        view.findViewById<TextView>(R.id.event_location).text = event.eventLocation
-
-        // Format timestamp to human-readable date
-        val dateText = dateFormatter.format(Date(event.eventDate))
-        view.findViewById<TextView>(R.id.event_date).text = dateText
-
-        return view
+        // Use the default implementation to inflate the view
+        return super.getView(position, convertView, parent)
     }
 }

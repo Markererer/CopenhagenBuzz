@@ -5,15 +5,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import dk.itu.moapd.copenhagenbuzz.maass.model.Event
+import dk.itu.moapd.copenhagenbuzz.maass.MyApplication
 import java.util.Calendar
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
 
-/**
- * ViewModel for managing and providing event data to the UI components.
- * Loads events from Firebase and provides methods to add new events.
- */
 class EventViewModel : ViewModel() {
 
     private val _eventLiveData = MutableLiveData<List<Event>>(emptyList())
@@ -23,15 +21,11 @@ class EventViewModel : ViewModel() {
     val favoritesLiveData: LiveData<List<Event>> = _favoritesLiveData
 
     init {
-        // Load events from Firebase when ViewModel is created
         loadEventsFromFirebase()
     }
 
-    /**
-     * Sets a realtime listener on the Firebase 'events' node.
-     */
     private fun loadEventsFromFirebase() {
-        val dbRef = FirebaseDatabase.getInstance().getReference("copenhagen_buzz/events")
+        val dbRef = MyApplication.database.getReference("copenhagen_buzz/events")
         dbRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val events = mutableListOf<Event>()
@@ -42,16 +36,13 @@ class EventViewModel : ViewModel() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                // TODO: Handle errors (e.g., log or show message)
+                // TODO: Handle errors
             }
         })
     }
 
-    /**
-     * Adds a new event to the Firebase database.
-     */
     fun addEvent(event: Event) {
-        val dbRef = FirebaseDatabase.getInstance().getReference("copenhagen_buzz/events")
+        val dbRef = MyApplication.database.getReference("copenhagen_buzz/events")
         val key = dbRef.push().key ?: return
         event.id = key
         dbRef.child(key).setValue(event)
@@ -63,15 +54,12 @@ class EventViewModel : ViewModel() {
             }
     }
 
-    /**
-     * Initializes sample events in Firebase if the events node is empty.
-     */
     fun initializeSampleEvents() {
-        val dbRef = FirebaseDatabase.getInstance().getReference("copenhagen_buzz/events")
+        val dbRef = MyApplication.database.getReference("copenhagen_buzz/events")
         dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.childrenCount == 0L) {
-                    // Add sample events only if the node is empty
+                    val testUserId = "test-uid-123"
                     val sampleEvents = listOf(
                         Event(
                             id = "",
@@ -82,7 +70,7 @@ class EventViewModel : ViewModel() {
                             eventDescription = "Annual jazz festival with live performances.",
                             imageResId = 0,
                             photoUrl = "https://picsum.photos/seed/jazz/600/400",
-                            eventAuthor = ""
+                            userId = testUserId
                         ),
                         Event(
                             id = "",
@@ -93,7 +81,7 @@ class EventViewModel : ViewModel() {
                             eventDescription = "Latest trends in technology and innovation.",
                             imageResId = 0,
                             photoUrl = "https://picsum.photos/seed/tech/600/400",
-                            eventAuthor = ""
+                            userId = testUserId
                         ),
                         Event(
                             id = "",
@@ -104,20 +92,48 @@ class EventViewModel : ViewModel() {
                             eventDescription = "Hands-on art creation session.",
                             imageResId = 0,
                             photoUrl = "https://picsum.photos/seed/art/600/400",
-                            eventAuthor = ""
+                            userId = testUserId
                         )
                     )
-                    sampleEvents.forEach { addEvent(it) } // Use addEvent to save to Firebase
+                    sampleEvents.forEach { addEvent(it) }
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                // TODO: Handle errors (e.g., log or show message)
+                // TODO: Handle errors
             }
         })
     }
+    fun addFavorite(eventId: String) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val ref = MyApplication.database.getReference("copenhagen_buzz/favorites/$userId/$eventId")
+        ref.setValue(true)
+    }
 
-    /**
-     * Removed generateRandomFavorites as it's not needed for now.
-     */
+    fun removeFavorite(eventId: String) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val ref = MyApplication.database.getReference("copenhagen_buzz/favorites/$userId/$eventId")
+        ref.removeValue()
+    }
+    fun loadFavorites() {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val favRef = MyApplication.database.getReference("copenhagen_buzz/favorites/$userId")
+        favRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val favoriteIds = snapshot.children.mapNotNull { it.key }
+                val eventsRef = MyApplication.database.getReference("copenhagen_buzz/events")
+                eventsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(eventSnapshot: DataSnapshot) {
+                        val favEvents = eventSnapshot.children
+                            .mapNotNull { it.getValue(Event::class.java) }
+                            .filter { it.id in favoriteIds }
+                        _favoritesLiveData.value = favEvents
+                    }
+                    override fun onCancelled(error: DatabaseError) {}
+                })
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        })
+    }
+
 }

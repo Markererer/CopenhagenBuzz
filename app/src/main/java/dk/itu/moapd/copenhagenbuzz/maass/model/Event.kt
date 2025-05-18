@@ -12,7 +12,7 @@ package dk.itu.moapd.copenhagenbuzz.maass.model
  * @property eventDescription A description of the event.
  * @property imageResId Optional local image resource ID (fallback if photoUrl is empty).
  * @property photoUrl URL to the event photo (e.g., from Picsum).
- * @property eventAuthor The user ID of the event creator.
+ * @property userId The user ID of the event creator.
  */
 data class Event(
     var id: String = "",
@@ -23,5 +23,5 @@ data class Event(
     var eventDescription: String = "",
     var imageResId: Int = 0,
     var photoUrl: String = "",
-    var eventAuthor: String = ""
+    var userId: String = "" // Renamed from eventAuthor
 )

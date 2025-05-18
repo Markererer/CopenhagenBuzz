@@ -35,5 +35,16 @@
             android:layout_height="wrap_content"
             android:text="@string/hint_event_date"
             android:textSize="14sp" />
+
+        <ImageView
+            android:id="@+id/favoriteIcon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_star_border"
+            android:contentDescription="@string/favorite"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="4dp"
+            android:layout_marginStart="8dp"/>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

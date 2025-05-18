@@ -59,6 +59,7 @@ dependencies {
     implementation(libs.play.services.auth)
     implementation(libs.firebase.ui.auth)
     implementation("com.google.firebase:firebase-auth") // Keep this when using BOM
+    implementation("com.firebaseui:firebase-ui-database:8.0.2")
 
     // Credential Manager (if needed)
     implementation("androidx.credentials:credentials:1.3.0") // Consider adding to libs.versions.toml

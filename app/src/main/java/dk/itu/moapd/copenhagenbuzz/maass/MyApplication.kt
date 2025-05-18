@@ -12,28 +12,22 @@ class MyApplication : Application() {
 
     companion object {
         lateinit var env: Map<String, String>
+        lateinit var database: FirebaseDatabase
     }
 
     override fun onCreate() {
         super.onCreate()
 
-        // 1) Apply dynamic colors
         DynamicColors.applyToActivitiesIfAvailable(this)
-
-        // 2) Initialize Firebase core (reads google-services.json)
         FirebaseApp.initializeApp(this)
-
-        // 3) Load and parse assets/env into a Map
         env = loadEnvFromAssets()
 
-        // 4) Fetch your DATABASE_URL
         val databaseUrl = env["DATABASE_URL"]
             ?: throw IllegalStateException("DATABASE_URL not found in env file")
 
         Log.d("MyApplication", "Loaded DATABASE_URL = $databaseUrl")
 
-        // 5) Initialize Realtime Database with that URL
-        val database = FirebaseDatabase.getInstance(databaseUrl)
+        database = FirebaseDatabase.getInstance(databaseUrl)
         database.setPersistenceEnabled(true)
     }
 
@@ -43,7 +37,6 @@ class MyApplication : Application() {
             assets.open("env").use { inputStream ->
                 BufferedReader(InputStreamReader(inputStream)).useLines { lines ->
                     lines.forEach { line ->
-                        // skip empty or comment lines
                         val trimmed = line.trim()
                         if (trimmed.isEmpty() || trimmed.startsWith("#")) return@forEach
                         val parts = trimmed.split("=", limit = 2)

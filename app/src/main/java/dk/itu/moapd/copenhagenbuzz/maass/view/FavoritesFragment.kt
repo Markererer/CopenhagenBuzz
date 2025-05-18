@@ -31,10 +31,7 @@ class FavoritesFragment : Fragment() {
         // Set up RecyclerView
         val recyclerView = view.findViewById<RecyclerView>(R.id.favoritesRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        adapter = FavoritesAdapter(
-            events = emptyList<Event>(),
-            eventList = emptyList<Event>()
-        )
+        adapter = FavoritesAdapter(emptyList())
         recyclerView.adapter = adapter
 
         // Get ViewModel

@@ -4,48 +4,56 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import dk.itu.moapd.copenhagenbuzz.maass.model.Event
-import dk.itu.moapd.copenhagenbuzz.maass.R
 import android.widget.ListView
-import dk.itu.moapd.copenhagenbuzz.maass.view.EventAdapter
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import com.firebase.ui.database.FirebaseListOptions
+import com.google.firebase.database.Query
+import dk.itu.moapd.copenhagenbuzz.maass.MyApplication
+import dk.itu.moapd.copenhagenbuzz.maass.R
+import dk.itu.moapd.copenhagenbuzz.maass.model.Event
+import dk.itu.moapd.copenhagenbuzz.maass.viewmodel.EventViewModel
+import android.util.Log
 
 class TimelineFragment : Fragment() {
+
+    private var eventAdapter: EventAdapter? = null
+    private lateinit var viewModel: EventViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_timeline, container, false)
-
-        // Mock data for testing with new Event signature
-        val events = listOf(
-            Event(
-                id = "1",
-                eventName = "Copenhagen Jazz Festival",
-                eventLocation = "Copenhagen",
-                eventDate = 1710000000000L, // example timestamp
-                eventType = "Concert",
-                eventDescription = "Annual jazz festival.",
-                imageResId = 0,
-                photoUrl = "",
-                eventAuthor = ""
-            ),
-            Event(
-                id = "2",
-                eventName = "Tech Conference",
-                eventLocation = "IT University",
-                eventDate = 1715000000000L,
-                eventType = "Conference",
-                eventDescription = "Tech talks and workshops.",
-                imageResId = 0,
-                photoUrl = "",
-                eventAuthor = ""
-            )
-        )
-
         val eventListView = view.findViewById<ListView>(R.id.event_list_view)
-        eventListView.adapter = EventAdapter(requireContext(), events)
+
+        viewModel = ViewModelProvider(requireActivity())[EventViewModel::class.java]
+        viewModel.loadFavorites()
+
+        val query: Query = MyApplication.database
+            .getReference("copenhagen_buzz/events")
+            .orderByChild("eventDate")
+
+        val options = FirebaseListOptions.Builder<Event>()
+            .setQuery(query, Event::class.java)
+            .setLayout(R.layout.event_row_item)
+            .setLifecycleOwner(viewLifecycleOwner)
+            .build()
+
+        viewModel.favoritesLiveData.observe(viewLifecycleOwner) { favoriteEvents: List<Event> ->
+            val favoriteIds = favoriteEvents.map { it.id }.toSet()
+
+            Log.d("TimelineFragment", "favoriteIds: $favoriteIds")
+            eventAdapter = EventAdapter(
+                options,
+                favoriteIds,
+                onFavoriteClick = { event, isFavorite ->
+                    if (isFavorite) viewModel.removeFavorite(event.id)
+                    else viewModel.addFavorite(event.id)
+                }
+            )
+            eventListView.adapter = eventAdapter
+        }
 
         return view
     }
