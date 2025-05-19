@@ -49,7 +49,12 @@ class AddEventFragment : Fragment() {
             Snackbar.make(requireView(), "Name, location, and date are required!", Snackbar.LENGTH_SHORT).show()
             return
         }
-
+        // Create EventLocation (for now, only address is filled; lat/lng can be set later)
+        val eventLocation = EventLocation(
+            latitude = 0.0, // TODO: Use geocoding to get real values
+            longitude = 0.0,
+            address = locationText
+        )
         // Parse date range: "dd/MM/yyyy - dd/MM/yyyy" -> use start date timestamp
         val startDateTimestamp = try {
             val parts = dateText.split(" - ")
