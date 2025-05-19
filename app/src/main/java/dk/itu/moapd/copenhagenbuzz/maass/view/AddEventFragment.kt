@@ -67,18 +67,15 @@ class AddEventFragment : Fragment() {
 
         val editing = viewModel.editingEvent
         if (editing != null) {
-            // Update existing event
             val updatedEvent = editing.copy(
                 eventName = name,
                 eventLocation = location,
                 eventDate = startDateTimestamp,
                 eventType = type,
                 eventDescription = description,
-                photoUrl = editing.photoUrl // keep original photo
+                photoUrl = editing.photoUrl
             )
-            dk.itu.moapd.copenhagenbuzz.maass.MyApplication.database
-                .getReference("copenhagen_buzz/events/${editing.id}")
-                .setValue(updatedEvent)
+            viewModel.updateEvent(updatedEvent)
             viewModel.editingEvent = null
         } else {
             // Add new event
@@ -131,9 +128,13 @@ class AddEventFragment : Fragment() {
             binding.editTextPickDate.setText(dateFormat.format(event.eventDate))
             binding.eventType.setText(event.eventType, false)
             binding.editTextEventDescription.setText(event.eventDescription)
+            viewModel.errorLiveData.observe(viewLifecycleOwner) { errorMsg ->
+                if (!errorMsg.isNullOrEmpty()) {
+                    Snackbar.make(requireView(), errorMsg, Snackbar.LENGTH_LONG).show()
+                }
+            }
         }
     }
-
 
     private fun showDateRangePicker(editText: EditText) {
         val calendar = Calendar.getInstance()

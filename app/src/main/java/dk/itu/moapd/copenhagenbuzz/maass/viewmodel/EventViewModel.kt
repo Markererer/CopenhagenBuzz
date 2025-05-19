@@ -1,5 +1,6 @@
 package dk.itu.moapd.copenhagenbuzz.maass.viewmodel
 
+
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -20,6 +21,10 @@ class EventViewModel : ViewModel() {
 
     private val _favoritesLiveData = MutableLiveData<List<Event>>(emptyList())
     val favoritesLiveData: LiveData<List<Event>> = _favoritesLiveData
+
+    private val _errorLiveData = MutableLiveData<String>()
+    val errorLiveData: LiveData<String> = _errorLiveData
+
 
     var editingEvent: Event? = null
 
@@ -49,11 +54,8 @@ class EventViewModel : ViewModel() {
         val key = dbRef.push().key ?: return
         event.id = key
         dbRef.child(key).setValue(event)
-            .addOnSuccessListener {
-                // Listener will update LiveData automatically
-            }
-            .addOnFailureListener {
-                // TODO: Handle failure
+            .addOnFailureListener { e ->
+                _errorLiveData.postValue("Failed to add event: ${e.message}")
             }
     }
 
@@ -112,6 +114,9 @@ class EventViewModel : ViewModel() {
         val favoriteRef = MyApplication.database
             .getReference("copenhagen_buzz/favorites/$userId/${event.id}")
         favoriteRef.setValue(event)
+            .addOnFailureListener { e ->
+                _errorLiveData.postValue("Failed to add favorite: ${e.message}")
+            }
     }
 
     fun removeFavorite(event: Event) {
@@ -119,6 +124,9 @@ class EventViewModel : ViewModel() {
         val favoriteRef = MyApplication.database
             .getReference("copenhagen_buzz/favorites/$userId/${event.id}")
         favoriteRef.removeValue()
+            .addOnFailureListener { e ->
+                _errorLiveData.postValue("Failed to remove favorite: ${e.message}")
+            }
     }
     fun loadFavorites() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
@@ -133,17 +141,32 @@ class EventViewModel : ViewModel() {
         })
     }
     fun deleteEvent(event: Event) {
-        // Remove from events
-        MyApplication.database.getReference("copenhagen_buzz/events/${event.id}").removeValue()
-        // Remove from all users' favorites
+        MyApplication.database.getReference("copenhagen_buzz/events/${event.id}")
+            .removeValue()
+            .addOnFailureListener { e ->
+                _errorLiveData.postValue("Failed to delete event: ${e.message}")
+            }
         val favRef = MyApplication.database.getReference("copenhagen_buzz/favorites")
         favRef.get().addOnSuccessListener { snapshot ->
             snapshot.children.forEach { userSnapshot ->
                 val userId = userSnapshot.key ?: return@forEach
                 MyApplication.database.getReference("copenhagen_buzz/favorites/$userId/${event.id}")
                     .removeValue()
+                    .addOnFailureListener { e ->
+                        _errorLiveData.postValue("Failed to remove favorite: ${e.message}")
+                    }
             }
+        }.addOnFailureListener { e ->
+            _errorLiveData.postValue("Failed to access favorites: ${e.message}")
         }
+    }
+    fun updateEvent(event: Event) {
+        MyApplication.database
+            .getReference("copenhagen_buzz/events/${event.id}")
+            .setValue(event)
+            .addOnFailureListener { e ->
+                _errorLiveData.postValue("Failed to update event: ${e.message}")
+            }
     }
 
 }
