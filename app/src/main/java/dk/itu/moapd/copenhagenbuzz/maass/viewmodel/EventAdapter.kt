@@ -15,8 +15,12 @@ import java.util.*
 class EventAdapter(
     options: FirebaseListOptions<Event>,
     private val favoriteIds: Set<String>,
-    private val onFavoriteClick: (Event, Boolean) -> Unit
+    private val onFavoriteClick: (Event, Boolean) -> Unit,
+    private val onEditClick: (Event) -> Unit,
+    private val onDeleteClick: (Event) -> Unit
 ) : FirebaseListAdapter<Event>(options) {
+
+
 
     private val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
 
@@ -31,6 +35,24 @@ class EventAdapter(
         )
         favoriteIcon.setOnClickListener {
             onFavoriteClick(model, isFavorite)
+        }
+
+        // Edit/Delete logic
+        val editIcon = v.findViewById<ImageView>(R.id.editIcon)
+        val deleteIcon = v.findViewById<ImageView>(R.id.deleteIcon)
+        val currentUserId = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
+        val isOwner = model.userId == currentUserId
+
+        editIcon?.visibility = if (isOwner) View.VISIBLE else View.GONE
+        deleteIcon?.visibility = if (isOwner) View.VISIBLE else View.GONE
+
+        editIcon?.setOnClickListener {
+            // Call a callback or start edit flow (implement this in your adapter constructor)
+             onEditClick(model)
+        }
+        deleteIcon?.setOnClickListener {
+            // Call a callback or start delete flow (implement this in your adapter constructor)
+            onDeleteClick(model)
         }
     }
 

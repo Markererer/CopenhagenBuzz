@@ -30,6 +30,8 @@
 
     <string name="account_created">Account created successfully</string>
     <string name="favorite">Favourite</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
 
 
 </resources>

@@ -14,6 +14,7 @@ import dk.itu.moapd.copenhagenbuzz.maass.R
 import dk.itu.moapd.copenhagenbuzz.maass.model.Event
 import dk.itu.moapd.copenhagenbuzz.maass.viewmodel.EventViewModel
 import android.util.Log
+import androidx.navigation.fragment.findNavController
 
 class TimelineFragment : Fragment() {
 
@@ -50,6 +51,16 @@ class TimelineFragment : Fragment() {
                 onFavoriteClick = { event, isFavorite ->
                     if (isFavorite) viewModel.removeFavorite(event)
                     else viewModel.addFavorite(event)
+                },
+                onEditClick = { event ->
+                    // Set the event to be edited in the ViewModel
+                    viewModel.editingEvent = event
+                    // Navigate to AddEventFragment
+                    findNavController().navigate(R.id.addEventFragment)
+
+                },
+                onDeleteClick = { event ->
+                    viewModel.deleteEvent(event)
                 }
             )
             eventListView.adapter = eventAdapter

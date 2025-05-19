@@ -19,6 +19,8 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import com.google.firebase.auth.FirebaseAuth
+import kotlin.text.format
+
 
 class AddEventFragment : Fragment() {
 
@@ -63,22 +65,36 @@ class AddEventFragment : Fragment() {
         // Generate a mock photo URL (Picsum)
         val photoUrl = "https://picsum.photos/seed/${System.currentTimeMillis()}/600/400"
 
-        // Create Event object
-        val event = Event(
-            id = "", // ViewModel will assign a key
-            eventName = name,
-            eventLocation = location,
-            eventDate = startDateTimestamp,
-            eventType = type,
-            eventDescription = description,
-            imageResId = 0,
-            photoUrl = photoUrl,
-            userId = userId
-        )
-
-        // Add to Firebase via ViewModel
-        viewModel.addEvent(event)
-
+        val editing = viewModel.editingEvent
+        if (editing != null) {
+            // Update existing event
+            val updatedEvent = editing.copy(
+                eventName = name,
+                eventLocation = location,
+                eventDate = startDateTimestamp,
+                eventType = type,
+                eventDescription = description,
+                photoUrl = editing.photoUrl // keep original photo
+            )
+            dk.itu.moapd.copenhagenbuzz.maass.MyApplication.database
+                .getReference("copenhagen_buzz/events/${editing.id}")
+                .setValue(updatedEvent)
+            viewModel.editingEvent = null
+        } else {
+            // Add new event
+            val event = Event(
+                id = "",
+                eventName = name,
+                eventLocation = location,
+                eventDate = startDateTimestamp,
+                eventType = type,
+                eventDescription = description,
+                imageResId = 0,
+                photoUrl = photoUrl,
+                userId = userId
+            )
+            viewModel.addEvent(event)
+        }
         clearForm()
         findNavController().popBackStack()
     }
@@ -104,10 +120,20 @@ class AddEventFragment : Fragment() {
         }
 
         // Event type dropdown
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, eventTypes)
+        val adapter =
+            ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, eventTypes)
         binding.eventType.setAdapter(adapter)
         binding.eventType.setOnClickListener { binding.eventType.showDropDown() }
+
+        viewModel.editingEvent?.let { event ->
+            binding.editTextEventName.setText(event.eventName)
+            binding.editTextEventLocation.setText(event.eventLocation)
+            binding.editTextPickDate.setText(dateFormat.format(event.eventDate))
+            binding.eventType.setText(event.eventType, false)
+            binding.editTextEventDescription.setText(event.eventDescription)
+        }
     }
+
 
     private fun showDateRangePicker(editText: EditText) {
         val calendar = Calendar.getInstance()

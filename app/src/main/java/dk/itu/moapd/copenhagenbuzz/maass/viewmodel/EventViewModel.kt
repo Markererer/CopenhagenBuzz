@@ -11,6 +11,7 @@ import dk.itu.moapd.copenhagenbuzz.maass.MyApplication
 import java.util.Calendar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
+import kotlin.text.get
 
 class EventViewModel : ViewModel() {
 
@@ -19,6 +20,8 @@ class EventViewModel : ViewModel() {
 
     private val _favoritesLiveData = MutableLiveData<List<Event>>(emptyList())
     val favoritesLiveData: LiveData<List<Event>> = _favoritesLiveData
+
+    var editingEvent: Event? = null
 
     init {
         loadEventsFromFirebase()
@@ -128,6 +131,19 @@ class EventViewModel : ViewModel() {
             }
             override fun onCancelled(error: DatabaseError) {}
         })
+    }
+    fun deleteEvent(event: Event) {
+        // Remove from events
+        MyApplication.database.getReference("copenhagen_buzz/events/${event.id}").removeValue()
+        // Remove from all users' favorites
+        val favRef = MyApplication.database.getReference("copenhagen_buzz/favorites")
+        favRef.get().addOnSuccessListener { snapshot ->
+            snapshot.children.forEach { userSnapshot ->
+                val userId = userSnapshot.key ?: return@forEach
+                MyApplication.database.getReference("copenhagen_buzz/favorites/$userId/${event.id}")
+                    .removeValue()
+            }
+        }
     }
 
 }
