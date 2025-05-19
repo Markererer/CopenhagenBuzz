@@ -104,33 +104,27 @@ class EventViewModel : ViewModel() {
             }
         })
     }
-    fun addFavorite(eventId: String) {
+    fun addFavorite(event: Event) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
-        val ref = MyApplication.database.getReference("copenhagen_buzz/favorites/$userId/$eventId")
-        ref.setValue(true)
+        val favoriteRef = MyApplication.database
+            .getReference("copenhagen_buzz/favorites/$userId/${event.id}")
+        favoriteRef.setValue(event)
     }
 
-    fun removeFavorite(eventId: String) {
+    fun removeFavorite(event: Event) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
-        val ref = MyApplication.database.getReference("copenhagen_buzz/favorites/$userId/$eventId")
-        ref.removeValue()
+        val favoriteRef = MyApplication.database
+            .getReference("copenhagen_buzz/favorites/$userId/${event.id}")
+        favoriteRef.removeValue()
     }
     fun loadFavorites() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
         val favRef = MyApplication.database.getReference("copenhagen_buzz/favorites/$userId")
         favRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val favoriteIds = snapshot.children.mapNotNull { it.key }
-                val eventsRef = MyApplication.database.getReference("copenhagen_buzz/events")
-                eventsRef.addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onDataChange(eventSnapshot: DataSnapshot) {
-                        val favEvents = eventSnapshot.children
-                            .mapNotNull { it.getValue(Event::class.java) }
-                            .filter { it.id in favoriteIds }
-                        _favoritesLiveData.value = favEvents
-                    }
-                    override fun onCancelled(error: DatabaseError) {}
-                })
+                val favEvents = snapshot.children
+                    .mapNotNull { it.getValue(Event::class.java) }
+                _favoritesLiveData.value = favEvents
             }
             override fun onCancelled(error: DatabaseError) {}
         })

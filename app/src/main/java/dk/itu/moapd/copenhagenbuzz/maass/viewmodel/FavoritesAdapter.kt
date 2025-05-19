@@ -5,14 +5,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.recyclerview.widget.RecyclerView
+import com.firebase.ui.database.FirebaseRecyclerAdapter
+import com.firebase.ui.database.FirebaseRecyclerOptions
 import dk.itu.moapd.copenhagenbuzz.maass.R
 import dk.itu.moapd.copenhagenbuzz.maass.model.Event
 
-class FavoritesAdapter(private var events: List<Event>) :
-    RecyclerView.Adapter<FavoritesAdapter.FavoriteViewHolder>() {
+class FavoritesAdapter(options: FirebaseRecyclerOptions<Event>) :
+    FirebaseRecyclerAdapter<Event, FavoritesAdapter.FavoriteViewHolder>(options) {
 
-    class FavoriteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class FavoriteViewHolder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
         val avatarLetter: TextView = itemView.findViewById(R.id.avatarLetter)
         val eventName: TextView = itemView.findViewById(R.id.eventName)
         val eventType: TextView = itemView.findViewById(R.id.eventType)
@@ -25,18 +26,11 @@ class FavoritesAdapter(private var events: List<Event>) :
         return FavoriteViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: FavoriteViewHolder, position: Int) {
-        val event = events[position]
-        holder.eventName.text = event.eventName
-        holder.eventType.text = event.eventType
-        holder.avatarLetter.text = event.userId?.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
+    override fun onBindViewHolder(holder: FavoriteViewHolder, position: Int, model: Event) {
+        android.util.Log.d("FavoritesAdapter", "Binding event: ${model.eventName} (${model.id})")
+        holder.eventName.text = model.eventName
+        holder.eventType.text = model.eventType
+        holder.avatarLetter.text = model.userId?.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
         holder.eventImage.setImageResource(R.drawable.baseline_save_24)
-    }
-
-    override fun getItemCount() = events.size
-
-    fun updateData(newEvents: List<Event>) {
-        events = newEvents
-        notifyDataSetChanged()
     }
 }

@@ -48,8 +48,8 @@ class TimelineFragment : Fragment() {
                 options,
                 favoriteIds,
                 onFavoriteClick = { event, isFavorite ->
-                    if (isFavorite) viewModel.removeFavorite(event.id)
-                    else viewModel.addFavorite(event.id)
+                    if (isFavorite) viewModel.removeFavorite(event)
+                    else viewModel.addFavorite(event)
                 }
             )
             eventListView.adapter = eventAdapter
