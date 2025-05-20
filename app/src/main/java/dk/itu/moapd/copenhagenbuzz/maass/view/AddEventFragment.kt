@@ -19,7 +19,9 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import com.google.firebase.auth.FirebaseAuth
+import dk.itu.moapd.copenhagenbuzz.maass.model.EventLocation
 import kotlin.text.format
+import android.location.Geocoder
 
 
 class AddEventFragment : Fragment() {
@@ -49,11 +51,15 @@ class AddEventFragment : Fragment() {
             Snackbar.make(requireView(), "Name, location, and date are required!", Snackbar.LENGTH_SHORT).show()
             return
         }
-        // Create EventLocation (for now, only address is filled; lat/lng can be set later)
+        // Geocode the address to get latitude and longitude
+        val geocoder = Geocoder(requireContext(), Locale.getDefault())
+        val results = geocoder.getFromLocationName(location, 1)
+        val latLng = results?.firstOrNull()
+
         val eventLocation = EventLocation(
-            latitude = 0.0, // TODO: Use geocoding to get real values
-            longitude = 0.0,
-            address = locationText
+            latitude = latLng?.latitude ?: 0.0,
+            longitude = latLng?.longitude ?: 0.0,
+            address = location
         )
         // Parse date range: "dd/MM/yyyy - dd/MM/yyyy" -> use start date timestamp
         val startDateTimestamp = try {
@@ -74,7 +80,7 @@ class AddEventFragment : Fragment() {
         if (editing != null) {
             val updatedEvent = editing.copy(
                 eventName = name,
-                eventLocation = location,
+                eventLocation = eventLocation,
                 eventDate = startDateTimestamp,
                 eventType = type,
                 eventDescription = description,
@@ -87,7 +93,7 @@ class AddEventFragment : Fragment() {
             val event = Event(
                 id = "",
                 eventName = name,
-                eventLocation = location,
+                eventLocation = eventLocation,
                 eventDate = startDateTimestamp,
                 eventType = type,
                 eventDescription = description,
@@ -129,7 +135,7 @@ class AddEventFragment : Fragment() {
 
         viewModel.editingEvent?.let { event ->
             binding.editTextEventName.setText(event.eventName)
-            binding.editTextEventLocation.setText(event.eventLocation)
+            binding.editTextEventLocation.setText(event.eventLocation.address)
             binding.editTextPickDate.setText(dateFormat.format(event.eventDate))
             binding.eventType.setText(event.eventType, false)
             binding.editTextEventDescription.setText(event.eventDescription)

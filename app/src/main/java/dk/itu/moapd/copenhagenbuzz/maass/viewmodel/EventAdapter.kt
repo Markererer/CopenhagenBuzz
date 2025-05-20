@@ -26,7 +26,7 @@ class EventAdapter(
 
     override fun populateView(v: View, model: Event, position: Int) {
         v.findViewById<TextView>(R.id.event_name).text = model.eventName
-        v.findViewById<TextView>(R.id.event_location).text = model.eventLocation
+        v.findViewById<TextView>(R.id.event_location).text = model.eventLocation.address
         v.findViewById<TextView>(R.id.event_date).text = dateFormatter.format(Date(model.eventDate))
         val favoriteIcon = v.findViewById<ImageView>(R.id.favoriteIcon)
         val isFavorite = favoriteIds.contains(model.id)
