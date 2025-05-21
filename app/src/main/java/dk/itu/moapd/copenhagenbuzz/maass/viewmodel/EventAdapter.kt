@@ -11,6 +11,7 @@ import dk.itu.moapd.copenhagenbuzz.maass.R
 import dk.itu.moapd.copenhagenbuzz.maass.model.Event
 import java.text.SimpleDateFormat
 import java.util.*
+import com.bumptech.glide.Glide
 
 class EventAdapter(
     options: FirebaseListOptions<Event>,
@@ -36,6 +37,16 @@ class EventAdapter(
         favoriteIcon.setOnClickListener {
             onFavoriteClick(model, isFavorite)
         }
+        // ... existing code ...
+        val eventImageView = v.findViewById<ImageView>(R.id.eventImageView)
+        if (model.photoUrl.isNotEmpty()) {
+            Glide.with(v.context)
+                .load(model.photoUrl)
+                .placeholder(R.drawable.placeholder_image)
+                .into(eventImageView)
+        } else {
+            eventImageView.setImageResource(R.drawable.placeholder_image)
+        }
 
         // Edit/Delete logic
         val editIcon = v.findViewById<ImageView>(R.id.editIcon)
@@ -57,7 +68,11 @@ class EventAdapter(
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        // Use the default implementation to inflate the view
+        if (position < 0 || position >= count) {
+            // Return an empty view to avoid crash
+            return View(parent.context)
+        }
         return super.getView(position, convertView, parent)
     }
+
 }

@@ -57,12 +57,13 @@
 
         <!-- Right: Event Image -->
         <ImageView
-            android:id="@+id/eventImage"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
+            android:id="@+id/eventImageView"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginStart="8dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/placeholder"
-            android:contentDescription="@string/event_image" />
+            android:contentDescription="@string/event_photo"
+            android:src="@drawable/placeholder_image" />
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>

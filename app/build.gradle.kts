@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.google.services)
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+    id("org.jetbrains.kotlin.kapt")
 }
 
 android {
@@ -76,6 +77,12 @@ dependencies {
     implementation("com.google.android.gms:play-services-maps:18.2.0")
     implementation("com.google.android.gms:play-services-location:21.0.1")
 
+    // Firebase storage
+    implementation(platform("com.google.firebase:firebase-bom:33.8.0"))
+    implementation("com.firebaseui:firebase-ui-storage:8.0.0")
+    implementation("com.google.firebase:firebase-storage-ktx")
 
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    kapt("com.github.bumptech.glide:compiler:4.16.0")
 
 }

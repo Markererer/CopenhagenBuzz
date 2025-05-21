@@ -21,6 +21,14 @@ class TimelineFragment : Fragment() {
     private var eventAdapter: EventAdapter? = null
     private lateinit var viewModel: EventViewModel
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        eventAdapter?.stopListening() // Detach Firebase observer
+        val listView = view?.findViewById<ListView>(R.id.event_list_view)
+        listView?.adapter = null
+        eventAdapter = null
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
