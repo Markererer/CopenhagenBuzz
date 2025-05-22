@@ -28,6 +28,7 @@ class EventViewModel : ViewModel() {
 
     init {
         loadEventsFromFirebase()
+        removeDuplicateEventsByName()
     }
 
     private fun loadEventsFromFirebase() {
@@ -54,6 +55,7 @@ class EventViewModel : ViewModel() {
     }
 
     fun addEvent(event: Event) {
+
         val dbRef = MyApplication.database.getReference("copenhagen_buzz/events")
         val key = dbRef.push().key ?: run {
             Log.e("EventViewModel", "Failed to generate key for new event")
@@ -82,49 +84,119 @@ class EventViewModel : ViewModel() {
                         Event(
                             id = "",
                             eventName = "Copenhagen Jazz Festival",
-                            eventLocation = EventLocation(
-                                latitude = 55.673906,
-                                longitude = 12.568337,
-                                address = "Tivoli Gardens"),
-                            eventDate = Calendar.getInstance().apply { add(Calendar.DAY_OF_MONTH, 5) }.timeInMillis,
+                            eventLocation = EventLocation(55.6761, 12.5683, "Kongens Nytorv, 1050 København K"),
+                            eventDate = System.currentTimeMillis() + 86400000L,
                             eventType = "Festival",
-                            eventDescription = "Annual jazz festival with live performances.",
+                            eventDescription = "Annual jazz festival in the city center.",
                             imageResId = 0,
                             photoUrl = "https://picsum.photos/seed/jazz/600/400",
                             userId = testUserId
                         ),
                         Event(
                             id = "",
-                            eventName = "Tech Conference 2025",
-                            eventLocation = EventLocation(
-                                latitude = 55.637963,
-                                longitude = 12.576899,
-                                address = "Bella Center"
-                            ),
-                            eventDate = Calendar.getInstance().apply { add(Calendar.DAY_OF_MONTH, 10) }.timeInMillis,
-                            eventType = "Conference",
-                            eventDescription = "Latest trends in technology and innovation.",
+                            eventName = "Food Market",
+                            eventLocation = EventLocation(55.6871, 12.5992, "Torvehallerne, Frederiksborggade 21, 1360 København K"),
+                            eventDate = System.currentTimeMillis() + 2 * 86400000L,
+                            eventType = "Market",
+                            eventDescription = "Taste local and international food.",
+                            imageResId = 0,
+                            photoUrl = "https://picsum.photos/seed/food/600/400",
+                            userId = testUserId
+                        ),
+                        Event(
+                            id = "",
+                            eventName = "Art Exhibition",
+                            eventLocation = EventLocation(55.6901, 12.5996, "Statens Museum for Kunst, Sølvgade 48-50, 1307 København K"),
+                            eventDate = System.currentTimeMillis() + 3 * 86400000L,
+                            eventType = "Exhibition",
+                            eventDescription = "Modern art from Danish artists.",
+                            imageResId = 0,
+                            photoUrl = "https://picsum.photos/seed/art/600/400",
+                            userId = testUserId
+                        ),
+                        Event(
+                            id = "",
+                            eventName = "Tech Meetup",
+                            eventLocation = EventLocation(55.6627, 12.5916, "IT-Universitetet, Rued Langgaards Vej 7, 2300 København S"),
+                            eventDate = System.currentTimeMillis() + 4 * 86400000L,
+                            eventType = "Meetup",
+                            eventDescription = "Networking for tech enthusiasts.",
                             imageResId = 0,
                             photoUrl = "https://picsum.photos/seed/tech/600/400",
                             userId = testUserId
                         ),
                         Event(
                             id = "",
-                            eventName = "Art Workshop",
-                            eventLocation = EventLocation(
-                                latitude = 55.690140,
-                                longitude = 12.579639,
-                                address = "National Gallery"
-                            ),
-                            eventDate = Calendar.getInstance().apply { add(Calendar.DAY_OF_MONTH, 3) }.timeInMillis,
-                            eventType = "Workshop",
-                            eventDescription = "Hands-on art creation session.",
+                            eventName = "Opera Night",
+                            eventLocation = EventLocation(55.6815, 12.6009, "Operaen, Ekvipagemestervej 10, 1438 København K"),
+                            eventDate = System.currentTimeMillis() + 5 * 86400000L,
+                            eventType = "Concert",
+                            eventDescription = "Enjoy a night at the opera.",
                             imageResId = 0,
-                            photoUrl = "https://picsum.photos/seed/art/600/400",
+                            photoUrl = "https://picsum.photos/seed/opera/600/400",
+                            userId = testUserId
+                        ),
+                        Event(
+                            id = "",
+                            eventName = "Street Food Festival",
+                            eventLocation = EventLocation(55.6929, 12.5991, "Reffen, Refshalevej 167A, 1432 København K"),
+                            eventDate = System.currentTimeMillis() + 6 * 86400000L,
+                            eventType = "Festival",
+                            eventDescription = "Street food from around the world.",
+                            imageResId = 0,
+                            photoUrl = "https://picsum.photos/seed/streetfood/600/400",
+                            userId = testUserId
+                        ),
+                        Event(
+                            id = "",
+                            eventName = "Book Fair",
+                            eventLocation = EventLocation(55.6759, 12.5655, "Rådhuspladsen, 1599 København V"),
+                            eventDate = System.currentTimeMillis() + 7 * 86400000L,
+                            eventType = "Fair",
+                            eventDescription = "Meet authors and buy books.",
+                            imageResId = 0,
+                            photoUrl = "https://picsum.photos/seed/book/600/400",
+                            userId = testUserId
+                        ),
+                        Event(
+                            id = "",
+                            eventName = "Film Screening",
+                            eventLocation = EventLocation(55.6731, 12.5683, "Grand Teatret, Mikkel Bryggers Gade 8, 1460 København K"),
+                            eventDate = System.currentTimeMillis() + 8 * 86400000L,
+                            eventType = "Screening",
+                            eventDescription = "Classic films on the big screen.",
+                            imageResId = 0,
+                            photoUrl = "https://picsum.photos/seed/film/600/400",
+                            userId = testUserId
+                        ),
+                        Event(
+                            id = "",
+                            eventName = "Yoga in the Park",
+                            eventLocation = EventLocation(55.6833, 12.5714, "Østre Anlæg, 2100 København Ø"),
+                            eventDate = System.currentTimeMillis() + 9 * 86400000L,
+                            eventType = "Wellness",
+                            eventDescription = "Morning yoga session outdoors.",
+                            imageResId = 0,
+                            photoUrl = "https://picsum.photos/seed/yoga/600/400",
+                            userId = testUserId
+                        ),
+                        Event(
+                            id = "",
+                            eventName = "Startup Pitch Night",
+                            eventLocation = EventLocation(55.6761, 12.5683, "Founders House, Njalsgade 19D, 2300 København S"),
+                            eventDate = System.currentTimeMillis() + 10 * 86400000L,
+                            eventType = "Business",
+                            eventDescription = "Startups pitch to investors.",
+                            imageResId = 0,
+                            photoUrl = "https://picsum.photos/seed/startup/600/400",
                             userId = testUserId
                         )
                     )
-                    sampleEvents.forEach { addEvent(it) }
+                    sampleEvents.forEach { event ->
+                        val key = dbRef.push().key ?: return@forEach
+                        event.id = key
+                        dbRef.child(key).setValue(event)
+                    }
                 } else {
                     Log.d("EventViewModel", "Events already exist, skipping sample creation")
                 }
@@ -135,6 +207,26 @@ class EventViewModel : ViewModel() {
                 _errorLiveData.postValue("Error reading events: ${error.message}")
             }
         })
+    }
+    fun removeDuplicateEventsByName() {
+        val dbRef = MyApplication.database.getReference("copenhagen_buzz/events")
+        dbRef.get().addOnSuccessListener { snapshot ->
+            val seenNames = mutableSetOf<String>()
+            val toDelete = mutableListOf<String>()
+            snapshot.children.forEach { child ->
+                val event = child.getValue(Event::class.java)
+                if (event != null) {
+                    if (seenNames.contains(event.eventName)) {
+                        toDelete.add(event.id)
+                    } else {
+                        seenNames.add(event.eventName)
+                    }
+                }
+            }
+            toDelete.forEach { id ->
+                dbRef.child(id).removeValue()
+            }
+        }
     }
 
     fun addFavorite(event: Event) {

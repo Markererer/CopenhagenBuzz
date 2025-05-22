@@ -167,6 +167,7 @@ class TimelineFragment : Fragment() {
                 if (now - shakeTimestamp > 1000) {
                     shakeTimestamp = now
                     scrollToClosestEvent()
+
                 }
             }
         }
