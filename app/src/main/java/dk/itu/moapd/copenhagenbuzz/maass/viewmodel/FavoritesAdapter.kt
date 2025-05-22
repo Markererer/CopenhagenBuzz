@@ -29,16 +29,11 @@ class FavoritesAdapter(options: FirebaseRecyclerOptions<Event>) :
     }
 
     override fun onBindViewHolder(holder: FavoriteViewHolder, position: Int, model: Event) {
-        if (position < 0 || position >= itemCount) {
-            // Do not bind if position is invalid
-            return
-        }
+        if (position < 0 || position >= itemCount) return
 
-
-        android.util.Log.d("FavoritesAdapter", "Binding event: ${model.eventName} (${model.id})")
         holder.eventName.text = model.eventName
         holder.eventType.text = model.eventType
-        holder.avatarLetter.text = model.userId?.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
+        holder.avatarLetter.text = model.userId.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
         if (model.photoUrl.isNotEmpty()) {
             Glide.with(holder.eventImage.context)
                 .load(model.photoUrl)
@@ -46,22 +41,6 @@ class FavoritesAdapter(options: FirebaseRecyclerOptions<Event>) :
                 .into(holder.eventImage)
         } else {
             holder.eventImage.setImageResource(R.drawable.placeholder_image)
-            android.util.Log.d(
-                "FavoritesAdapter",
-                "Binding event: ${model.eventName} (${model.id})"
-            )
-            holder.eventName.text = model.eventName
-            holder.eventType.text = model.eventType
-            holder.avatarLetter.text =
-                model.userId?.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
-            if (model.photoUrl.isNotEmpty()) {
-                Glide.with(holder.eventImage.context)
-                    .load(model.photoUrl)
-                    .placeholder(R.drawable.placeholder_image)
-                    .into(holder.eventImage)
-            } else {
-                holder.eventImage.setImageResource(R.drawable.placeholder_image)
-            }
         }
     }
 }

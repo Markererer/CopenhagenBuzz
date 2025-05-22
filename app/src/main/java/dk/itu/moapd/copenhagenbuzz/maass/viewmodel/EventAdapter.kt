@@ -1,6 +1,5 @@
 package dk.itu.moapd.copenhagenbuzz.maass.view
 
-import android.app.Activity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -14,14 +13,12 @@ import java.util.*
 import com.bumptech.glide.Glide
 
 class EventAdapter(
-    options: FirebaseListOptions<Event>,
-    private val favoriteIds: Set<String>,
+    val options: FirebaseListOptions<Event>,
+    private var favoriteIds: Set<String>,
     private val onFavoriteClick: (Event, Boolean) -> Unit,
     private val onEditClick: (Event) -> Unit,
     private val onDeleteClick: (Event) -> Unit
 ) : FirebaseListAdapter<Event>(options) {
-
-
 
     private val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
 
@@ -37,7 +34,6 @@ class EventAdapter(
         favoriteIcon.setOnClickListener {
             onFavoriteClick(model, isFavorite)
         }
-        // ... existing code ...
         val eventImageView = v.findViewById<ImageView>(R.id.eventImageView)
         if (model.photoUrl.isNotEmpty()) {
             Glide.with(v.context)
@@ -48,7 +44,6 @@ class EventAdapter(
             eventImageView.setImageResource(R.drawable.placeholder_image)
         }
 
-        // Edit/Delete logic
         val editIcon = v.findViewById<ImageView>(R.id.editIcon)
         val deleteIcon = v.findViewById<ImageView>(R.id.deleteIcon)
         val currentUserId = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
@@ -58,11 +53,9 @@ class EventAdapter(
         deleteIcon?.visibility = if (isOwner) View.VISIBLE else View.GONE
 
         editIcon?.setOnClickListener {
-            // Call a callback or start edit flow (implement this in your adapter constructor)
-             onEditClick(model)
+            onEditClick(model)
         }
         deleteIcon?.setOnClickListener {
-            // Call a callback or start delete flow (implement this in your adapter constructor)
             onDeleteClick(model)
         }
     }
@@ -75,4 +68,8 @@ class EventAdapter(
         return super.getView(position, convertView, parent)
     }
 
+    fun updateFavoriteIds(newFavoriteIds: Set<String>) {
+        favoriteIds = newFavoriteIds
+        notifyDataSetChanged()
+    }
 }
