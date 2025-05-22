@@ -72,4 +72,11 @@ class EventAdapter(
         favoriteIds = newFavoriteIds
         notifyDataSetChanged()
     }
+    fun getPositionForEvent(event: Event): Int {
+        for (i in 0 until count) {
+            val adapterEvent = getItem(i)
+            if (adapterEvent?.id == event.id) return i
+        }
+        return -1
+    }
 }

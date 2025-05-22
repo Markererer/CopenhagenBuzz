@@ -122,9 +122,8 @@ class TimelineFragment : Fragment() {
         if (events.isEmpty()) return
 
         var minDist = Float.MAX_VALUE
-        var minIdx = 0
         var closestEvent: Event? = null
-        events.forEachIndexed { idx, event ->
+        events.forEach { event ->
             val eLoc = event.eventLocation
             val results = FloatArray(1)
             Location.distanceBetween(
@@ -134,23 +133,25 @@ class TimelineFragment : Fragment() {
             )
             if (results[0] < minDist) {
                 minDist = results[0]
-                minIdx = idx
                 closestEvent = event
             }
         }
-        eventListView.smoothScrollToPosition(minIdx)
         closestEvent?.let { event ->
-            val distanceStr = if (minDist >= 1000) {
-                String.format("%.1f km", minDist / 1000)
-            } else {
-                String.format("%.0f m", minDist)
-            }
-            view?.let {
-                Snackbar.make(
-                    it,
-                    "The closest event is $distanceStr away - ${event.eventName}.",
-                    Snackbar.LENGTH_SHORT
-                ).show()
+            val adapterIdx = eventAdapter?.getPositionForEvent(event) ?: -1
+            if (adapterIdx >= 0) {
+                eventListView.smoothScrollToPosition(adapterIdx)
+                val distanceStr = if (minDist >= 1000) {
+                    String.format("%.1f km", minDist / 1000)
+                } else {
+                    String.format("%.0f m", minDist)
+                }
+                view?.let {
+                    Snackbar.make(
+                        it,
+                        "The closest event is $distanceStr away - ${event.eventName}.",
+                        Snackbar.LENGTH_SHORT
+                    ).show()
+                }
             }
         }
     }
