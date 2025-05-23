@@ -27,19 +27,35 @@ import dk.itu.moapd.copenhagenbuzz.maass.viewmodel.EventViewModel
 import androidx.navigation.fragment.findNavController
 import kotlin.math.sqrt
 
+/**
+ * Fragment that displays a timeline of events in a ListView.
+ * Integrates Firebase for event data, supports marking favorites, editing, and deleting events.
+ * Includes shake detection to scroll to the closest event based on the user's location.
+ */
 class TimelineFragment : Fragment() {
 
+    // Adapter for displaying events in the ListView.
     private var eventAdapter: EventAdapter? = null
+    // ViewModel for managing event and favorite data.
     private lateinit var viewModel: EventViewModel
+    // ListView for displaying the list of events.
     private lateinit var eventListView: ListView
 
+    // Options for configuring the FirebaseListAdapter.
     private lateinit var eventAdapterOptions: FirebaseListOptions<Event>
 
+    // Sensor manager and accelerometer for shake detection.
     private lateinit var sensorManager: SensorManager
     private var accelerometer: Sensor? = null
+    // Timestamp of the last shake event.
     private var shakeTimestamp: Long = 0
+    // User's last known location.
     private var userLocation: Location? = null
 
+    /**
+     * Called when the fragment's view is destroyed.
+     * Stops the event adapter and unregisters the shake listener.
+     */
     override fun onDestroyView() {
         super.onDestroyView()
         eventAdapter?.stopListening()
@@ -48,6 +64,14 @@ class TimelineFragment : Fragment() {
         sensorManager.unregisterListener(shakeListener)
     }
 
+    /**
+     * Inflates the fragment layout, initializes the ListView, ViewModel, sensors, and event adapter.
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state as given here.
+     * @return The View for the fragment's UI, or null.
+     */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -104,6 +128,9 @@ class TimelineFragment : Fragment() {
         return view
     }
 
+    /**
+     * Registers the shake listener when the fragment is resumed.
+     */
     override fun onResume() {
         super.onResume()
         accelerometer?.let {
@@ -111,11 +138,18 @@ class TimelineFragment : Fragment() {
         }
     }
 
+    /**
+     * Unregisters the shake listener when the fragment is paused.
+     */
     override fun onPause() {
         super.onPause()
         sensorManager.unregisterListener(shakeListener)
     }
 
+    /**
+     * Scrolls the ListView to the event closest to the user's current location.
+     * Shows a Snackbar with the distance and event name.
+     */
     private fun scrollToClosestEvent() {
         val events = viewModel.eventLiveData.value ?: return
         val loc = userLocation ?: return
@@ -156,6 +190,10 @@ class TimelineFragment : Fragment() {
         }
     }
 
+    /**
+     * SensorEventListener for detecting shake gestures.
+     * Triggers scrollToClosestEvent() when a shake is detected.
+     */
     private val shakeListener = object : SensorEventListener {
         override fun onSensorChanged(event: SensorEvent) {
             val x = event.values[0]
@@ -174,6 +212,10 @@ class TimelineFragment : Fragment() {
         override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
     }
 
+    /**
+     * Fetches the user's last known location and stores it in userLocation.
+     * Requires ACCESS_FINE_LOCATION permission.
+     */
     private fun fetchUserLocation() {
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),

@@ -13,24 +13,40 @@ import java.util.Calendar
 import com.google.firebase.auth.FirebaseAuth
 import dk.itu.moapd.copenhagenbuzz.maass.model.EventLocation
 
+/**
+ * ViewModel for managing event and favorite data.
+ * Handles loading, adding, updating, and deleting events from Firebase.
+ * Also manages user favorites and provides LiveData for UI observation.
+ */
 class EventViewModel : ViewModel() {
 
+    // LiveData holding the list of all events.
     private val _eventLiveData = MutableLiveData<List<Event>>(emptyList())
     val eventLiveData: LiveData<List<Event>> = _eventLiveData
 
+    // LiveData holding the list of favorite events for the current user.
     private val _favoritesLiveData = MutableLiveData<List<Event>>(emptyList())
     val favoritesLiveData: LiveData<List<Event>> = _favoritesLiveData
 
+    // LiveData for error messages.
     private val _errorLiveData = MutableLiveData<String>()
     val errorLiveData: LiveData<String> = _errorLiveData
 
+    // Holds the event currently being edited.
     var editingEvent: Event? = null
 
+    /**
+     * Initializes the ViewModel by loading events and removing duplicates.
+     */
     init {
         loadEventsFromFirebase()
         removeDuplicateEventsByName()
     }
 
+    /**
+     * Loads events from Firebase and updates the eventLiveData.
+     * Handles errors and logs the process.
+     */
     private fun loadEventsFromFirebase() {
         val dbRef = MyApplication.database.getReference("copenhagen_buzz/events")
         dbRef.addValueEventListener(object : ValueEventListener {
@@ -54,6 +70,12 @@ class EventViewModel : ViewModel() {
         })
     }
 
+    /**
+     * Adds a new event to Firebase.
+     * Generates a unique key for the event and handles success or failure.
+     *
+     * @param event The event to add.
+     */
     fun addEvent(event: Event) {
 
         val dbRef = MyApplication.database.getReference("copenhagen_buzz/events")
@@ -72,6 +94,10 @@ class EventViewModel : ViewModel() {
             }
     }
 
+    /**
+     * Initializes the database with sample events if none exist.
+     * Used for demonstration or testing purposes.
+     */
     fun initializeSampleEvents() {
         val dbRef = MyApplication.database.getReference("copenhagen_buzz/events")
         dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -208,6 +234,11 @@ class EventViewModel : ViewModel() {
             }
         })
     }
+
+    /**
+     * Removes duplicate events from Firebase based on event name.
+     * Keeps only the first occurrence of each event name.
+     */
     fun removeDuplicateEventsByName() {
         val dbRef = MyApplication.database.getReference("copenhagen_buzz/events")
         dbRef.get().addOnSuccessListener { snapshot ->
@@ -229,6 +260,11 @@ class EventViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Adds an event to the current user's favorites in Firebase.
+     *
+     * @param event The event to add as favorite.
+     */
     fun addFavorite(event: Event) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: run {
             Log.e("EventViewModel", "No user logged in, cannot add favorite")
@@ -246,6 +282,11 @@ class EventViewModel : ViewModel() {
             }
     }
 
+    /**
+     * Removes an event from the current user's favorites in Firebase.
+     *
+     * @param event The event to remove from favorites.
+     */
     fun removeFavorite(event: Event) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: run {
             Log.e("EventViewModel", "No user logged in, cannot remove favorite")
@@ -263,6 +304,9 @@ class EventViewModel : ViewModel() {
             }
     }
 
+    /**
+     * Loads the current user's favorite events from Firebase and updates favoritesLiveData.
+     */
     fun loadFavorites() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: run {
             Log.e("EventViewModel", "No user logged in, cannot load favorites")
@@ -290,6 +334,11 @@ class EventViewModel : ViewModel() {
         })
     }
 
+    /**
+     * Deletes an event from Firebase and removes it from all users' favorites.
+     *
+     * @param event The event to delete.
+     */
     fun deleteEvent(event: Event) {
         MyApplication.database.getReference("copenhagen_buzz/events/${event.id}")
             .removeValue()
@@ -320,6 +369,11 @@ class EventViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Updates an existing event in Firebase.
+     *
+     * @param event The event to update.
+     */
     fun updateEvent(event: Event) {
         MyApplication.database
             .getReference("copenhagen_buzz/events/${event.id}")

@@ -31,6 +31,10 @@ import com.google.firebase.auth.FirebaseAuth
 import dk.itu.moapd.copenhagenbuzz.maass.model.EventLocation
 import android.location.Geocoder
 
+/**
+ * Fragment for adding or editing an event.
+ * Handles user input, image selection (camera/gallery), geocoding, and event creation.
+ */
 class AddEventFragment : Fragment() {
 
     private lateinit var binding: FragmentAddEventBinding
@@ -40,14 +44,14 @@ class AddEventFragment : Fragment() {
 
     private var imageUri: Uri? = null
 
-    // Camera launcher
+    // Camera launcher for taking a photo and saving it to imageUri
     private val takePictureLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
         if (success && imageUri != null) {
             binding.imageViewEventPhoto.setImageURI(imageUri)
         }
     }
 
-    // Gallery picker launcher
+    // Gallery picker launcher for selecting an image from the device
     private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
             imageUri = it
@@ -55,6 +59,9 @@ class AddEventFragment : Fragment() {
         }
     }
 
+    /**
+     * Inflates the fragment layout and initializes view binding.
+     */
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -64,23 +71,26 @@ class AddEventFragment : Fragment() {
         return binding.root
     }
 
+    /**
+     * Sets up UI event listeners and restores editing state if editing an event.
+     */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Date picker
+        // Date picker setup
         binding.editTextPickDate.isFocusable = false
         binding.editTextPickDate.isFocusableInTouchMode = false
         binding.editTextPickDate.setOnClickListener {
             showDateRangePicker(binding.editTextPickDate)
         }
 
-        // Event type dropdown
+        // Event type dropdown setup
         val adapter =
             ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, eventTypes)
         binding.eventType.setAdapter(adapter)
         binding.eventType.setOnClickListener { binding.eventType.showDropDown() }
 
-        // Take photo
+        // Take photo button
         binding.btnTakePhoto.setOnClickListener {
             if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                 launchCamera()
@@ -89,7 +99,7 @@ class AddEventFragment : Fragment() {
             }
         }
 
-        // Choose from gallery
+        // Choose from gallery button
         binding.btnChooseFromGallery.setOnClickListener {
             pickImageLauncher.launch("image/*")
         }
@@ -112,6 +122,9 @@ class AddEventFragment : Fragment() {
         }
     }
 
+    /**
+     * Launches the camera to take a photo and save it to the device.
+     */
     private fun launchCamera() {
         val resolver = requireContext().contentResolver
         val contentValues = ContentValues().apply {
@@ -122,6 +135,9 @@ class AddEventFragment : Fragment() {
         takePictureLauncher.launch(imageUri)
     }
 
+    /**
+     * Validates user input, geocodes the location, and triggers image upload and event saving.
+     */
     fun saveEvent() {
         val name = binding.editTextEventName.text.toString().trim()
         val location = binding.editTextEventLocation.text.toString().trim()
@@ -175,6 +191,14 @@ class AddEventFragment : Fragment() {
             uploadImageAndSaveEvent(imageUri!!, event, editing != null)
         }
     }
+
+    /**
+     * Uploads the selected image to Firebase Storage and saves or updates the event in the database.
+     *
+     * @param imageUri The URI of the image to upload.
+     * @param event The event object to save.
+     * @param isEdit True if editing an existing event, false if creating a new one.
+     */
     private fun uploadImageAndSaveEvent(
         imageUri: Uri,
         event: Event,
@@ -203,6 +227,9 @@ class AddEventFragment : Fragment() {
         }
     }
 
+    /**
+     * Clears all form fields and resets the image view.
+     */
     private fun clearForm() {
         binding.editTextEventName.text?.clear()
         binding.editTextEventLocation.text?.clear()
@@ -213,6 +240,11 @@ class AddEventFragment : Fragment() {
         imageUri = null
     }
 
+    /**
+     * Shows a date range picker dialog and sets the selected range in the provided EditText.
+     *
+     * @param editText The EditText to set the selected date range.
+     */
     private fun showDateRangePicker(editText: EditText) {
         val calendar = Calendar.getInstance()
         DatePickerDialog(
@@ -235,7 +267,13 @@ class AddEventFragment : Fragment() {
         ).show()
     }
 
-    // Handle permission result for camera
+    /**
+     * Handles the result of permission requests, specifically for the camera.
+     *
+     * @param requestCode The request code passed in requestPermissions.
+     * @param permissions The requested permissions.
+     * @param grantResults The grant results for the corresponding permissions.
+     */
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == 1001 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {

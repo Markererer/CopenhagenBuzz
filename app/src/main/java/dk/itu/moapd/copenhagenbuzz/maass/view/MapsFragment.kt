@@ -22,12 +22,28 @@ import dk.itu.moapd.copenhagenbuzz.maass.R
 import dk.itu.moapd.copenhagenbuzz.maass.model.Event
 import dk.itu.moapd.copenhagenbuzz.maass.viewmodel.EventViewModel
 
+/**
+ * Fragment that displays a Google Map with event markers.
+ * Observes event data from the ViewModel and places markers for each event location.
+ * Handles user location display and camera movement.
+ */
 class MapsFragment : Fragment(), OnMapReadyCallback {
 
+    // MapView instance for displaying the map.
     private lateinit var mapView: MapView
+    // Reference to the GoogleMap object.
     private var googleMap: GoogleMap? = null
+    // Shared ViewModel for accessing event data.
     private val viewModel: EventViewModel by activityViewModels()
 
+    /**
+     * Inflates the fragment layout and initializes the MapView.
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state as given here.
+     * @return The View for the fragment's UI, or null.
+     */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -39,6 +55,12 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         return view
     }
 
+    /**
+     * Called when the GoogleMap is ready to be used.
+     * Enables user location, observes events, and sets up marker click handling.
+     *
+     * @param map The GoogleMap instance.
+     */
     override fun onMapReady(map: GoogleMap) {
         googleMap = map
         enableMyLocation()
@@ -54,6 +76,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         moveCameraToUserLocation()
     }
 
+    /**
+     * Observes the event list from the ViewModel and adds markers for each event on the map.
+     */
     private fun observeEvents() {
         viewModel.eventLiveData.observe(viewLifecycleOwner) { events ->
             googleMap?.clear()
@@ -73,6 +98,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
+    /**
+     * Enables the user's current location on the map if permission is granted.
+     */
     private fun enableMyLocation() {
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
@@ -83,6 +111,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
+    /**
+     * Moves the camera to the user's current location if permission is granted.
+     */
     private fun moveCameraToUserLocation() {
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
@@ -99,6 +130,14 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
             }
         }
     }
+
+    /**
+     * Called immediately after onCreateView.
+     * Handles window insets for proper map padding.
+     *
+     * @param view The View returned by onCreateView.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state as given here.
+     */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         view.setOnApplyWindowInsetsListener { v, insets ->
@@ -109,10 +148,32 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
     }
 
     // MapView lifecycle methods
+
+    /**
+     * Forwards the onResume event to the MapView.
+     */
     override fun onResume() { super.onResume(); mapView.onResume() }
+
+    /**
+     * Forwards the onPause event to the MapView.
+     */
     override fun onPause() { super.onPause(); mapView.onPause() }
+
+    /**
+     * Forwards the onDestroy event to the MapView.
+     */
     override fun onDestroy() { super.onDestroy(); mapView.onDestroy() }
+
+    /**
+     * Forwards the onLowMemory event to the MapView.
+     */
     override fun onLowMemory() { super.onLowMemory(); mapView.onLowMemory() }
+
+    /**
+     * Forwards the onSaveInstanceState event to the MapView.
+     *
+     * @param outState Bundle in which to place your saved state.
+     */
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         mapView.onSaveInstanceState(outState)

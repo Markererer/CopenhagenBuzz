@@ -21,13 +21,26 @@ import dk.itu.moapd.copenhagenbuzz.maass.R
 import dk.itu.moapd.copenhagenbuzz.maass.databinding.ActivityMainBinding
 import dk.itu.moapd.copenhagenbuzz.maass.viewmodel.EventViewModel
 
+/**
+ * Main activity that serves as the entry point for the app after login.
+ * Handles navigation, UI setup, and user authentication state.
+ */
 class MainActivity : AppCompatActivity() {
 
+    // View binding for the main activity layout
     private lateinit var binding: ActivityMainBinding
+    // Navigation controller for fragment navigation
     private lateinit var navController: NavController
+    // Shared ViewModel for event data
     private val viewModel: EventViewModel by viewModels()
+    // Tracks if the user is logged in
     private var isLoggedIn: Boolean = false
 
+    /**
+     * Called when the activity is starting. Sets up UI, navigation, and authentication state.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down then this Bundle contains the data it most recently supplied.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -36,17 +49,17 @@ class MainActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setSupportActionBar(binding.topAppBar)
 
-        // Retrieve login state
+        // Retrieve login state from intent
         isLoggedIn = intent.getBooleanExtra("isLoggedIn", false)
         invalidateOptionsMenu()
 
-        // Initialize sample events
+        // Initialize sample events in the ViewModel
         viewModel.initializeSampleEvents()
 
-        // Set initial FAB visibility
+        // Set initial visibility of the FAB based on login state
         binding.fabAddEvent.visibility = if (isLoggedIn) View.VISIBLE else View.GONE
 
-        // Handle insets
+        // Handle system window insets for proper padding
         ViewCompat.setOnApplyWindowInsetsListener(binding.contentFrame) { view, insets ->
             val systemInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.updatePadding(top = systemInsets.top)
@@ -54,14 +67,14 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        // Navigation setup
+        // Set up navigation with the NavController
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
         findViewById<BottomNavigationView>(R.id.bottom_navigation)
             .setupWithNavController(navController)
 
-        // Handle FAB logic based on destination
+        // Configure FAB behavior based on navigation destination
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
                 R.id.addEventFragment -> {
@@ -82,7 +95,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            // Hide FAB in login screen or when not logged in
+            // Hide FAB on login screen or when not logged in
             binding.fabAddEvent.visibility = when {
                 destination.id == R.id.emailInputLayout -> View.GONE
                 isLoggedIn -> View.VISIBLE
@@ -91,11 +104,23 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Inflates the options menu.
+     *
+     * @param menu The options menu in which items are placed.
+     * @return true for the menu to be displayed; false otherwise.
+     */
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }
 
+    /**
+     * Prepares the options menu by setting visibility based on login state.
+     *
+     * @param menu The options menu as last shown or first initialized.
+     * @return true for the menu to be displayed; false otherwise.
+     */
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         menu.findItem(R.id.login).isVisible = !isLoggedIn
         menu.findItem(R.id.logout).isVisible = isLoggedIn
@@ -103,6 +128,12 @@ class MainActivity : AppCompatActivity() {
         return super.onPrepareOptionsMenu(menu)
     }
 
+    /**
+     * Handles selection of menu items.
+     *
+     * @param item The selected menu item.
+     * @return true if the event was handled, false otherwise.
+     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.login -> {
