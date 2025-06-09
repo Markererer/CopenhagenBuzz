@@ -2,12 +2,12 @@
 
 A mobile application developed as part of the **Mobile App Development (MOAPD)** course at **IT University of Copenhagen**. CopenhagenBuzz is a social event-sharing app where users can create, browse, favorite, and locate events around Copenhagen in real-time.
 
-![Screenshot of CopenhagenBuzz](images/copenahgenbuzz.jpg)
+![Screenshot of CopenhagenBuzz](images/copenhagenbuzz.jpg)
 
 
 ## 🧠 Overview
 
-This project demonstrates the use of modern Android development practices including:
+This project demonstrates the use of modern Android development practices, including:
 - MVVM architecture
 - Firebase Realtime Database & Firebase Storage
 - Google Maps integration
